@@ -9,44 +9,40 @@ contract WavePortal {
 
     event NewWave(address indexed from, uint256 timestamp, string message);
 
-    /*
-     * I created a struct here named Wave.
-     */
     struct Wave {
-        address waver; // The address of the user who waved.
-        string message; // The message the user sent.
-        uint256 timestamp; // The timestamp when the user waved.
+        address waver;
+        string message;
+        uint256 timestamp;
     }
 
     Wave[] waves;
 
-    constructor() {
-        console.log("I AM SMART CONTRACT. POG.");
+    constructor() payable {
+        console.log("We have been constructed!");
     }
 
     function wave(string memory _message) public {
         totalWaves += 1;
-        console.log("%s waved w/ message %s", msg.sender, _message);
+        console.log("%s has waved!", msg.sender);
+
         waves.push(Wave(msg.sender, _message, block.timestamp));
+
         emit NewWave(msg.sender, block.timestamp, _message);
 
         uint256 prizeAmount = 0.0001 ether;
         require(
             prizeAmount <= address(this).balance,
-            "Trying to withdraw more money than the contract has."
+            "Trying to withdraw more money than they contract has."
         );
         (bool success, ) = (msg.sender).call{value: prizeAmount}("");
         require(success, "Failed to withdraw money from contract.");
-}
     }
+
     function getAllWaves() public view returns (Wave[] memory) {
         return waves;
     }
 
     function getTotalWaves() public view returns (uint256) {
-        // Optional: Add this line if you want to see the contract print the value!
-        // We'll also print it over in run.js as well.
-        console.log("We have %d total waves!", totalWaves);
         return totalWaves;
     }
 }
